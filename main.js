@@ -28,8 +28,8 @@ window.addEventListener('load', function() {
   const TALL_PILLAR_BOTTOM = 0.085;
   const TALL_PILLAR_TOP   = 2.20;
   const TALL_PILLAR_HEIGHT = TALL_PILLAR_TOP - TALL_PILLAR_BOTTOM;
-  let waveAmplitude = 0.075;
-  let waveCount     = 6;
+  let waveAmplitude = 0.05;  // 凸の高さ10cm（谷→山）＝ 振幅±5cm
+  let waveCount     = 4;     // 凸4つ
 
   // ===== Scene =====
   const scene = new THREE.Scene();
@@ -332,6 +332,11 @@ window.addEventListener('load', function() {
   let polesData = [];           // horse pole groups (used in final animation)
   let rotatingHolder = null;    // holds everything that "rotates" — created at step 6
   let wavyRailMesh = null;
+  // Per-horse sub-assemblies kept for wavy-rail bobbing (index 0-3 = same angular slot)
+  const horsePoleCasters = []; // step 4: caster group under each horse pole
+  const seatAssemblies   = []; // step 9: stop collar + seat sub-group per horse pole
+  const horseObjects     = []; // step 10: horse models
+  const personObjects    = []; // step 10: staff figures (decoration toggle)
 
   // ===== STEP 1: Floor anchor + center post =====
   function buildStep1() {
@@ -474,6 +479,7 @@ window.addEventListener('load', function() {
       cg.position.set(POLE_RADIUS * Math.cos(a), 0, POLE_RADIUS * Math.sin(a));
       cg.rotation.y = Math.PI / 2 - a;
       g.add(cg);
+      horsePoleCasters.push(cg);
     }
     // Edge pillar casters (4)
     for (let i = 0; i < 4; i++) {
@@ -614,6 +620,9 @@ window.addEventListener('load', function() {
       const a = (i / 4) * Math.PI * 2;
       const px = POLE_RADIUS * Math.cos(a);
       const pz = POLE_RADIUS * Math.sin(a);
+      // Each horse's collar + seat parts live in one sub-group so the whole
+      // "ride" can bob up and down with the pole over the wavy rail.
+      const sub = new THREE.Group();
 
       // Stop collar (シャフトカラー)
       const collar = new THREE.Mesh(
@@ -622,40 +631,34 @@ window.addEventListener('load', function() {
       );
       collar.position.set(px, COLLAR_Y_ON_POLE, pz);
       collar.castShadow = true;
-      g.add(collar);
+      sub.add(collar);
       const capGeo = new THREE.RingGeometry(POLE_DIAMETER/2 + 0.001, 0.042, 16);
       for (let c = 0; c < 2; c++) {
         const cap = new THREE.Mesh(capGeo, collarMat);
         cap.rotation.x = Math.PI / 2;
         cap.position.set(px, COLLAR_Y_ON_POLE + (c === 0 ? 0.02 : -0.02), pz);
-        g.add(cap);
+        sub.add(cap);
       }
       const setScrew = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.015, 0.012), collarMat);
       setScrew.position.set(px + 0.044 * Math.cos(a), COLLAR_Y_ON_POLE, pz + 0.044 * Math.sin(a));
-      g.add(setScrew);
+      sub.add(setScrew);
 
-      // Cross clamp + short pipe + seat board (the "乗る部分")
-      // Cross clamp at HORSE_Y - 0.15 on the pole
+      // Cross clamp + short pipe + seat board (the "乗る部分") at HORSE_Y - 0.15
       const seatY = HORSE_Y - 0.15;  // ≈ 0.80
-      const seatClampMat = clampMat;
-      const seatClamp = makeScaffoldClamp('y', 'x', PIPE_HALF_GAP, seatClampMat);
-      // Seat clamp oriented so the cross pipe goes tangentially (in pole-local x direction)
-      // poleGroup.rotation.y = π/2 − a, so local x corresponds to global (rotated) frame
-      // To keep things simple, rotate the seat clamp to match
+      const seatClamp = makeScaffoldClamp('y', 'x', PIPE_HALF_GAP, clampMat);
       seatClamp.position.set(px, seatY, pz);
       seatClamp.rotation.y = Math.PI / 2 - a;
-      g.add(seatClamp);
-      // Short horizontal pipe (the cross-arm) through the clamp, tangential to the radial direction
+      sub.add(seatClamp);
+      // Short horizontal pipe (cross-arm) through the clamp, tangential to the radius
       const shortPipe = new THREE.Mesh(
         new THREE.CylinderGeometry(SCAFFOLD_PIPE_R, SCAFFOLD_PIPE_R, 0.42, 10),
         pipeMat
       );
       shortPipe.position.set(px, seatY, pz);
-      // Orient the short pipe tangentially: perpendicular to the radial direction (a)
       shortPipe.rotation.y = -a;
       shortPipe.rotation.z = Math.PI / 2;
       shortPipe.castShadow = true;
-      g.add(shortPipe);
+      sub.add(shortPipe);
       // Seat board on top of the short pipe (a small wooden plank)
       const seatBoard = new THREE.Mesh(
         new THREE.BoxGeometry(0.30, 0.018, 0.40),
@@ -664,7 +667,10 @@ window.addEventListener('load', function() {
       seatBoard.position.set(px, seatY + 0.04, pz);
       seatBoard.rotation.y = -a;
       seatBoard.castShadow = true; seatBoard.receiveShadow = true;
-      g.add(seatBoard);
+      sub.add(seatBoard);
+
+      g.add(sub);
+      seatAssemblies.push(sub);
     }
     return g;
   }
@@ -679,6 +685,7 @@ window.addEventListener('load', function() {
       horse.position.set(POLE_RADIUS * Math.cos(a), HORSE_Y, POLE_RADIUS * Math.sin(a));
       horse.rotation.y = Math.PI / 2 - a;
       g.add(horse);
+      horseObjects.push(horse);
     }
     // Push handles + staff at 4 cardinal edge pillars
     const handlePositions = [
@@ -707,6 +714,7 @@ window.addEventListener('load', function() {
       person.position.set(h.x + tx * 0.48, 0, h.z + tz * 0.48);
       person.rotation.y = Math.atan2(tx, tz) + Math.PI;
       g.add(person);
+      personObjects.push(person);
     }
     return g;
   }
@@ -766,7 +774,7 @@ window.addEventListener('load', function() {
     {
       title: '波型レール設置＋中心軸固定',
       desc: 'レール下に紙束＋ベニヤ基台を敷き、その上に波型の薄板を載せる。中心支柱を床合板に本締め固定。',
-      detail: 'キャスター（前ステップ）が波型レール上を転がる構成。波の数 6・振幅 ±7.5 cm。',
+      detail: 'キャスター（前ステップ）が波型レール上を転がる構成。凸 4 つ・高さ 10 cm（馬は 10 cm 上下動）。',
       parts: '波型レール一式 ・ 基台ベニヤ ・ 紙束（重量調整用） ・ 中心軸固定ボルト'
     },
     {
@@ -792,6 +800,75 @@ window.addEventListener('load', function() {
   // ===== State + UI =====
   let currentStep = 0;
   const totalSteps = 10;
+
+  // ===== Toggle state =====
+  let rotationEnabled    = true;   // 回転 ON/OFF
+  let decorationsVisible = true;   // 装飾品（馬・人）表示
+  let dimensionsVisible  = false;  // 寸法ラベル表示
+  let assemblyAngle      = 0;      // current rotation of the merry-go-round (rad)
+
+  // ===== Dimension labels (3D billboards toggled by the 寸法 button) =====
+  function makeDimLabel(text) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const fontSize = 52;
+    const font = 'bold ' + fontSize + "px -apple-system, 'Hiragino Sans', sans-serif";
+    ctx.font = font;
+    const pad = 26;
+    canvas.width  = Math.ceil(ctx.measureText(text).width) + pad * 2;
+    canvas.height = fontSize + pad * 2;
+    ctx.font = font;
+    ctx.fillStyle = 'rgba(176, 74, 58, 0.94)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.minFilter = THREE.LinearFilter;
+    texture.encoding  = THREE.sRGBEncoding;
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: texture, depthTest: false, depthWrite: false, transparent: true
+    }));
+    const s = 0.0023;
+    sprite.scale.set(canvas.width * s, canvas.height * s, 1);
+    return sprite;
+  }
+
+  const dimensionGroup = new THREE.Group();
+  dimensionGroup.visible = false;
+  scene.add(dimensionGroup);
+  [
+    ['中心軸 2.5m',              0,     2.85, 0   ],
+    ['馬ポール 2m / 旋回 r1.0m',  1.35,  1.62, 0   ],
+    ['波型レール 凸4・高さ10cm',  0,     0.52, 1.75],
+    ['外周支柱 r=2.05m',         2.05,  2.50, 0   ],
+    ['馬の上下動 10cm',          -1.35,  1.62, 0   ]
+  ].forEach(function(d) {
+    const label = makeDimLabel(d[0]);
+    label.position.set(d[1], d[2], d[3]);
+    dimensionGroup.add(label);
+  });
+
+  // ===== Decoration (horses + staff) visibility =====
+  function applyDecorations() {
+    for (let i = 0; i < horseObjects.length; i++)  horseObjects[i].visible  = decorationsVisible;
+    for (let i = 0; i < personObjects.length; i++) personObjects[i].visible = decorationsVisible;
+  }
+
+  // ===== Horse bobbing — each horse pole follows the stationary wavy rail =====
+  function applyBobbing() {
+    const active = (currentStep === totalSteps);
+    for (let i = 0; i < polesData.length; i++) {
+      const bob = active
+        ? waveAmplitude * Math.sin(waveCount * (polesData[i].baseAngle + assemblyAngle))
+        : 0;
+      polesData[i].group.position.y = bob;
+      if (horsePoleCasters[i]) horsePoleCasters[i].position.y = bob;
+      if (seatAssemblies[i])   seatAssemblies[i].position.y   = bob;
+      if (horseObjects[i])     horseObjects[i].position.y     = HORSE_Y + bob;
+    }
+  }
 
   function setStep(n) {
     currentStep = Math.max(0, Math.min(totalSteps, n));
@@ -820,6 +897,8 @@ window.addEventListener('load', function() {
 
     // UI update
     document.getElementById('step-num').textContent = currentStep;
+    const stepSelectEl = document.getElementById('step-select');
+    if (stepSelectEl) stepSelectEl.value = String(currentStep);
     document.getElementById('progress-fill').style.width = (currentStep / totalSteps * 100) + '%';
     document.querySelectorAll('.dot').forEach((d, i) => {
       d.classList.remove('done', 'current');
@@ -857,34 +936,68 @@ window.addEventListener('load', function() {
     d.addEventListener('click', () => setStep(parseInt(d.dataset.step, 10)));
   });
 
+  // ===== Step selector dropdown — jump straight to any state =====
+  const stepSelect = document.getElementById('step-select');
+  const opt0 = document.createElement('option');
+  opt0.value = '0';
+  opt0.textContent = '開始前（STEP 0）';
+  stepSelect.appendChild(opt0);
+  for (let i = 0; i < stepData.length; i++) {
+    const opt = document.createElement('option');
+    opt.value = String(i + 1);
+    opt.textContent = 'STEP ' + (i + 1) + '：' + stepData[i].title;
+    stepSelect.appendChild(opt);
+  }
+  stepSelect.addEventListener('change', function() {
+    setStep(parseInt(stepSelect.value, 10));
+  });
+
+  // ===== Toggle buttons — 寸法 / 回転 / 装飾品 =====
+  const btnDim  = document.getElementById('toggle-dim');
+  const btnRot  = document.getElementById('toggle-rot');
+  const btnDeco = document.getElementById('toggle-deco');
+  function syncToggleUI() {
+    btnDim.classList.toggle('active', dimensionsVisible);
+    btnRot.classList.toggle('active', rotationEnabled);
+    btnDeco.classList.toggle('active', decorationsVisible);
+  }
+  btnDim.onclick = function() {
+    dimensionsVisible = !dimensionsVisible;
+    dimensionGroup.visible = dimensionsVisible;
+    syncToggleUI();
+  };
+  btnRot.onclick = function() {
+    rotationEnabled = !rotationEnabled;
+    syncToggleUI();
+  };
+  btnDeco.onclick = function() {
+    decorationsVisible = !decorationsVisible;
+    applyDecorations();
+    syncToggleUI();
+  };
+  syncToggleUI();
+
   // Initialize
   setStep(0);
 
-  // ===== Animation: rotate the upper assembly when complete =====
-  // The center axis is stationary; everything except step1 (anchor+post) rotates
-  // when currentStep === totalSteps. Pole bobbing on the wavy rail also happens.
-  const rotateableSteps = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // step indices (0-based) of groups that rotate.
-  // step 0 = anchor + center post → DOES NOT rotate
-  // BUT — for simplicity in this assembly visualizer, we'll only rotate at completion (step 10),
-  // and we'll rotate stepGroups[1..9] (everything except the floor anchor + center post).
+  // ===== Animation: rotation + horse bobbing =====
+  // The center post (step 1) and the wavy rail + substrate (step 7, index 6) stay
+  // STATIONARY; everything else turns around the center so the horse-pole casters
+  // roll over the fixed wavy rail. Rotation is gated by the 回転 toggle.
+  const rotateableSteps = [1, 2, 3, 4, 5, 7, 8, 9];
+  const OMEGA = 0.5 * Math.PI * 2 / 60; // 0.5 rpm
 
   let lastT = 0;
   function animate(t) {
     requestAnimationFrame(animate);
     const dt = Math.min((t - lastT) / 1000, 0.1);
     lastT = t;
-    if (currentStep === totalSteps) {
-      const omega = 0.5 * Math.PI * 2 / 60; // 0.5 rpm
-      rotateableSteps.forEach(i => {
-        if (stepGroups[i] && stepGroups[i].visible) {
-          stepGroups[i].rotation.y += omega * dt;
-        }
-      });
-    } else {
-      rotateableSteps.forEach(i => {
-        if (stepGroups[i]) stepGroups[i].rotation.y = 0;
-      });
+    if (rotationEnabled) assemblyAngle += OMEGA * dt;
+    for (let k = 0; k < rotateableSteps.length; k++) {
+      const g = stepGroups[rotateableSteps[k]];
+      if (g) g.rotation.y = assemblyAngle;
     }
+    applyBobbing();
     renderer.render(scene, camera);
   }
   animate(0);

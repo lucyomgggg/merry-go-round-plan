@@ -17,6 +17,8 @@
   </div>
   <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
 
+  <select id="step-select" class="step-select" aria-label="ステップを選択"></select>
+
   <h2 class="step-title" id="step-title">開始前</h2>
   <p class="step-desc" id="step-desc">「次へ」を押して組立を開始してください。</p>
   <div class="step-detail" id="step-detail" style="display:none;">
@@ -33,6 +35,15 @@
   <div class="btn-row" style="margin-top:6px;">
     <button id="btn-reset" class="ghost">最初から</button>
     <button id="btn-jump-end" class="ghost">完成形を見る</button>
+  </div>
+
+  <div class="toggle-section">
+    <div class="toggle-label">表示オプション</div>
+    <div class="toggle-row">
+      <button class="toggle-btn" id="toggle-dim">寸法</button>
+      <button class="toggle-btn" id="toggle-rot">回転</button>
+      <button class="toggle-btn" id="toggle-deco">装飾品</button>
+    </div>
   </div>
 </div>
 

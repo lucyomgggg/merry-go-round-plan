@@ -121,6 +121,57 @@ button.ghost { background: transparent; border-color: rgba(255,255,255,0.1); fon
   color: #8a92a3; font-size: 13px;
 }
 
+/* ===== Step selector dropdown ===== */
+.step-select {
+  width: 100%;
+  -webkit-appearance: none; appearance: none;
+  background-color: rgba(255,255,255,0.05);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%238a92a3'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #e8e8e8;
+  padding: 9px 28px 9px 11px;
+  border-radius: 8px;
+  font-size: 12px; font-family: inherit;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+.step-select:hover { border-color: rgba(255,255,255,0.28); }
+.step-select:focus { outline: none; border-color: #b04a3a; }
+.step-select option { background: #141a28; color: #e8e8e8; }
+
+/* ===== Display-option toggles ===== */
+.toggle-section {
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.toggle-label {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px; letter-spacing: 0.12em;
+  color: #6a7080; margin-bottom: 8px;
+}
+.toggle-row { display: flex; gap: 6px; }
+.toggle-row .toggle-btn {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #8a92a3;
+  padding: 9px 4px;
+  border-radius: 8px; cursor: pointer;
+  font-size: 11px; font-family: inherit; font-weight: 500;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.toggle-row .toggle-btn::before { content: '○ '; opacity: 0.55; }
+.toggle-row .toggle-btn:hover { background: rgba(255,255,255,0.1); color: #d4d4d4; }
+.toggle-row .toggle-btn.active {
+  background: rgba(176, 74, 58, 0.92);
+  border-color: #b04a3a; color: #fff;
+}
+.toggle-row .toggle-btn.active::before { content: '● '; opacity: 1; }
+.toggle-row .toggle-btn.active:hover { background: #c0584a; }
+
 @media (max-width: 640px) {
   #step-panel {
     width: calc(100vw - 16px); left: 8px; top: 8px;
