@@ -17,25 +17,16 @@
   </div>
   <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
 
-  <select id="step-select" class="step-select" aria-label="ステップを選択"></select>
+  <div id="step-list" class="step-list"></div>
 
   <h2 class="step-title" id="step-title">開始前</h2>
-  <p class="step-desc" id="step-desc">「次へ」を押して組立を開始してください。</p>
+  <p class="step-desc" id="step-desc">上の一覧から段階を選んでください。</p>
   <div class="step-detail" id="step-detail" style="display:none;">
     <span class="label">POINT</span>
     <span id="step-detail-text"></span>
   </div>
 
   <div class="parts-mini" id="parts-mini"></div>
-
-  <div class="btn-row" style="margin-top:14px;">
-    <button id="btn-prev" disabled>← 戻る</button>
-    <button id="btn-next" class="primary">次へ →</button>
-  </div>
-  <div class="btn-row" style="margin-top:6px;">
-    <button id="btn-reset" class="ghost">最初から</button>
-    <button id="btn-jump-end" class="ghost">完成形を見る</button>
-  </div>
 
   <div class="toggle-section">
     <div class="toggle-label">表示オプション</div>

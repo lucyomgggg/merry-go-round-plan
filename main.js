@@ -897,8 +897,6 @@ window.addEventListener('load', function() {
 
     // UI update
     document.getElementById('step-num').textContent = currentStep;
-    const stepSelectEl = document.getElementById('step-select');
-    if (stepSelectEl) stepSelectEl.value = String(currentStep);
     document.getElementById('progress-fill').style.width = (currentStep / totalSteps * 100) + '%';
     document.querySelectorAll('.dot').forEach((d, i) => {
       d.classList.remove('done', 'current');
@@ -906,9 +904,15 @@ window.addEventListener('load', function() {
       if (s < currentStep) d.classList.add('done');
       else if (s === currentStep) d.classList.add('current');
     });
+    document.querySelectorAll('.step-list-item').forEach(function(item) {
+      item.classList.remove('done', 'current');
+      const s = parseInt(item.dataset.step, 10);
+      if (s < currentStep) item.classList.add('done');
+      else if (s === currentStep) item.classList.add('current');
+    });
     if (currentStep === 0) {
       document.getElementById('step-title').textContent = '開始前';
-      document.getElementById('step-desc').textContent = '「次へ」を押して組立を開始してください。10 段階で完成。';
+      document.getElementById('step-desc').textContent = '上の一覧から段階を選んでください。全 10 段階で完成します。';
       document.getElementById('step-detail').style.display = 'none';
       document.getElementById('parts-mini').innerHTML = '';
     } else {
@@ -919,38 +923,33 @@ window.addEventListener('load', function() {
       document.getElementById('step-detail-text').textContent = sd.detail;
       document.getElementById('parts-mini').innerHTML = '<span class="key">PARTS</span> ' + sd.parts;
     }
-    document.getElementById('btn-prev').disabled = (currentStep === 0);
-    document.getElementById('btn-next').disabled = (currentStep === totalSteps);
-    if (currentStep === totalSteps) {
-      document.getElementById('btn-next').textContent = '完成 ✓';
-    } else {
-      document.getElementById('btn-next').textContent = '次へ →';
-    }
   }
 
-  document.getElementById('btn-next').onclick = () => setStep(currentStep + 1);
-  document.getElementById('btn-prev').onclick = () => setStep(currentStep - 1);
-  document.getElementById('btn-reset').onclick = () => setStep(0);
-  document.getElementById('btn-jump-end').onclick = () => setStep(totalSteps);
   document.querySelectorAll('.dot').forEach(d => {
     d.addEventListener('click', () => setStep(parseInt(d.dataset.step, 10)));
   });
 
-  // ===== Step selector dropdown — jump straight to any state =====
-  const stepSelect = document.getElementById('step-select');
-  const opt0 = document.createElement('option');
-  opt0.value = '0';
-  opt0.textContent = '開始前（STEP 0）';
-  stepSelect.appendChild(opt0);
-  for (let i = 0; i < stepData.length; i++) {
-    const opt = document.createElement('option');
-    opt.value = String(i + 1);
-    opt.textContent = 'STEP ' + (i + 1) + '：' + stepData[i].title;
-    stepSelect.appendChild(opt);
+  // ===== Step list — always-visible dashboard navigation =====
+  const stepList = document.getElementById('step-list');
+  function addStepItem(value, label) {
+    const item = document.createElement('button');
+    item.className = 'step-list-item';
+    item.dataset.step = String(value);
+    const num = document.createElement('span');
+    num.className = 'sli-num';
+    num.textContent = String(value);
+    const title = document.createElement('span');
+    title.className = 'sli-title';
+    title.textContent = label;
+    item.appendChild(num);
+    item.appendChild(title);
+    item.addEventListener('click', function() { setStep(value); });
+    stepList.appendChild(item);
   }
-  stepSelect.addEventListener('change', function() {
-    setStep(parseInt(stepSelect.value, 10));
-  });
+  addStepItem(0, '開始前');
+  for (let i = 0; i < stepData.length; i++) {
+    addStepItem(i + 1, stepData[i].title);
+  }
 
   // ===== Toggle buttons — 寸法 / 回転 / 装飾品 =====
   const btnDim  = document.getElementById('toggle-dim');
