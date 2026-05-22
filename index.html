@@ -8,14 +8,21 @@
 </head>
 <body>
 <canvas id="scene"></canvas>
+<div id="drawing-view" style="display:none;"></div>
 <div id="loading">読み込み中...</div>
 
+<button id="dashboard-toggle" style="display:none;" aria-label="ダッシュボード開閉">☰</button>
 <div id="step-panel" class="panel" style="display:none;">
   <div class="step-header-row">
     <span class="step-counter">STEP <span class="num" id="step-num">0</span> <span style="opacity:0.4;">/ 10</span></span>
     <span class="v6-badge">V6</span>
   </div>
   <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+  <div class="view-mode-switch" id="view-mode-switch">
+    <button class="vm-btn active" id="vm-3d" data-mode="3d">3Dモデル</button>
+    <button class="vm-btn" id="vm-drawing" data-mode="drawing">図面</button>
+  </div>
 
   <div id="step-list" class="step-list"></div>
 
@@ -34,6 +41,7 @@
       <button class="toggle-btn" id="toggle-dim">寸法</button>
       <button class="toggle-btn" id="toggle-rot">回転</button>
       <button class="toggle-btn" id="toggle-deco">装飾品</button>
+      <button class="toggle-btn" id="toggle-wood">木材</button>
     </div>
   </div>
 </div>
