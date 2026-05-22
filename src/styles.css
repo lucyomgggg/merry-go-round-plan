@@ -1,47 +1,56 @@
-プロ* { box-sizing: border-box; }
-body { margin: 0; padding: 0; overflow: hidden; background: #0f1419;
-  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif;
-  color: #e8e8e8; }
-#scene { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: block; touch-action: none; }
+/* styles.css — メリーゴーランド組立シミュレータ 全体スタイル（ライトテーマ） */
 
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0; padding: 0; overflow: hidden; background: #eceef1;
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  color: #23272f;
+}
+button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-appearance: none; appearance: none; }
+
+/* ===== Layout ===== */
+.app { display: flex; height: 100vh; overflow: hidden; }
+.view-area { position: relative; flex: 1; min-width: 0; }
+.scene-canvas { position: absolute; inset: 0; display: block; touch-action: none; }
+
+/* ===== Panels ===== */
 .panel {
-  position: fixed; background: rgba(20, 25, 40, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: #ffffff;
+  border: 1px solid #e3e6ea;
   border-radius: 14px;
   font-size: 13px; line-height: 1.5;
+  box-shadow: 0 2px 12px rgba(20, 28, 48, 0.08);
 }
 
-#step-panel {
-  top: 0; left: 0; right: auto;
+.step-panel {
+  flex: none;
   width: 360px;
   height: 100vh;
   overflow-y: auto;
   display: flex; flex-direction: column;
   padding: 20px 24px;
-  border-radius: 0;
-  border: none;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  border-right: 1px solid #e3e6ea;
 }
 
-#dashboard-toggle {
+.dashboard-toggle {
   display: none;
   position: fixed;
   top: 10px; left: 10px;
   z-index: 100;
   width: 44px; height: 44px;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(20, 25, 40, 0.92);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  color: #e8e8e8;
+  border: 1px solid #d4d8df;
+  background: #ffffff;
+  color: #23272f;
   font-size: 20px;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-appearance: none; appearance: none;
+  box-shadow: 0 2px 10px rgba(20, 28, 48, 0.12);
   transition: background 0.15s;
 }
-#dashboard-toggle:hover { background: rgba(40, 48, 72, 0.95); }
+.dashboard-toggle:hover { background: #eef0f3; }
 
 .step-header-row {
   display: flex; justify-content: space-between; align-items: center;
@@ -49,7 +58,7 @@ body { margin: 0; padding: 0; overflow: hidden; background: #0f1419;
 }
 .step-counter {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 11px; letter-spacing: 0.15em; color: #8a92a3;
+  font-size: 11px; letter-spacing: 0.15em; color: #8a90a0;
 }
 .step-counter .num { color: #b04a3a; font-size: 14px; font-weight: 600; }
 .v6-badge {
@@ -59,77 +68,73 @@ body { margin: 0; padding: 0; overflow: hidden; background: #0f1419;
 }
 
 .progress-bar {
-  height: 3px; background: rgba(255,255,255,0.07);
+  height: 3px; background: #e4e6ea;
   border-radius: 2px; overflow: hidden; margin-bottom: 14px;
 }
 .progress-fill {
   height: 100%; background: #b04a3a;
-  width: 0%; transition: width 0.35s ease;
+  transition: width 0.35s ease;
 }
 
 .step-title {
   font-size: 17px; font-weight: 600; margin: 0 0 6px;
-  letter-spacing: 0.02em; color: #fff;
+  letter-spacing: 0.02em; color: #1b1f27;
 }
 .step-desc {
-  font-size: 12px; line-height: 1.65; color: #b8bccc;
+  font-size: 12px; line-height: 1.65; color: #4f5663;
   margin: 0 0 12px;
 }
 .step-detail {
-  font-size: 11px; line-height: 1.6; color: #8a92a3;
-  background: rgba(176, 74, 58, 0.07);
-  border-left: 2px solid rgba(176, 74, 58, 0.4);
+  font-size: 11px; line-height: 1.6; color: #5b6270;
+  background: rgba(176, 74, 58, 0.08);
+  border-left: 2px solid rgba(176, 74, 58, 0.5);
   padding: 8px 10px; border-radius: 0 4px 4px 0;
   margin-bottom: 14px;
 }
 .step-detail .label {
-  color: #e07a6a; font-weight: 600; font-size: 10px; letter-spacing: 0.1em;
+  color: #b04a3a; font-weight: 600; font-size: 10px; letter-spacing: 0.1em;
   display: block; margin-bottom: 4px;
 }
 
-button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-appearance: none; appearance: none; }
-
 .parts-mini {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 10px; color: #6a7080;
+  font-size: 10px; color: #8a90a0;
   margin-top: 14px; padding-top: 12px;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid #e3e6ea;
 }
-.parts-mini .key { color: #b8bccc; }
-.parts-mini .new { color: #e07a6a; }
+.parts-mini .key { color: #4f5663; }
 
-#legend-panel {
-  bottom: 12px; left: 372px; max-width: 360px;
-  font-size: 11px; opacity: 0.55;
+/* ===== Legend ===== */
+.legend-panel {
+  position: absolute;
+  bottom: 12px; left: 12px; max-width: 360px;
+  font-size: 11px; color: #5b6270;
   padding: 8px 12px;
   pointer-events: none;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   letter-spacing: 0.05em;
 }
 
-#step-indicator-bar {
-  position: fixed;
-  bottom: 16px; left: calc(360px + (100vw - 360px) / 2); transform: translateX(-50%);
+/* ===== Step indicator dots ===== */
+.step-indicator-bar {
+  position: absolute;
+  bottom: 16px; left: 50%; transform: translateX(-50%);
   display: flex; gap: 4px;
   padding: 8px 10px;
-  background: rgba(20, 25, 40, 0.85);
-  border: 1px solid rgba(255,255,255,0.07);
+  background: #ffffff;
+  border: 1px solid #e3e6ea;
   border-radius: 100px;
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 2px 12px rgba(20, 28, 48, 0.1);
 }
 .dot {
   width: 8px; height: 8px; border-radius: 50%;
-  background: rgba(255,255,255,0.12);
+  background: #d3d6dd;
   transition: all 0.25s ease;
   cursor: pointer;
+  border: none; padding: 0;
 }
-.dot.done { background: rgba(176, 74, 58, 0.6); }
-.dot.current { background: #b04a3a; transform: scale(1.5); box-shadow: 0 0 8px rgba(176,74,58,0.5); }
-
-#loading {
-  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  color: #8a92a3; font-size: 13px;
-}
+.dot.done { background: rgba(176, 74, 58, 0.55); }
+.dot.current { background: #b04a3a; transform: scale(1.5); box-shadow: 0 0 8px rgba(176,74,58,0.45); }
 
 /* ===== Step list (dashboard navigation) ===== */
 .step-list {
@@ -140,9 +145,9 @@ button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-c
 .step-list .step-list-item {
   display: flex; align-items: center; gap: 9px;
   width: 100%; text-align: left;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
-  color: #b8bccc;
+  background: #f4f5f7;
+  border: 1px solid #e3e6ea;
+  color: #4f5663;
   padding: 6px 9px;
   border-radius: 7px;
   cursor: pointer;
@@ -154,56 +159,55 @@ button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-c
   width: 21px; height: 21px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 5px;
-  background: rgba(255,255,255,0.06);
+  background: #e6e8ec;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 10px; color: #8a92a3;
+  font-size: 10px; color: #8a90a0;
 }
 .step-list .step-list-item .sli-title {
   flex: 1;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .step-list .step-list-item:hover {
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.18);
-  color: #fff;
+  background: #eceef1;
+  border-color: #d2d6dd;
+  color: #1b1f27;
 }
 .step-list .step-list-item.done .sli-num {
-  background: rgba(176,74,58,0.32); color: #e6c3bc;
+  background: rgba(176,74,58,0.16); color: #9a4032;
 }
 .step-list .step-list-item.current {
-  background: rgba(176,74,58,0.92);
+  background: #b04a3a;
   border-color: #b04a3a; color: #fff;
 }
 .step-list .step-list-item.current .sli-num {
-  background: rgba(0,0,0,0.22); color: #fff;
+  background: rgba(0,0,0,0.2); color: #fff;
 }
 
 /* ===== Display-option toggles ===== */
 .toggle-section {
   margin-top: 14px; padding-top: 12px;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid #e3e6ea;
 }
 .toggle-label {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 10px; letter-spacing: 0.12em;
-  color: #6a7080; margin-bottom: 8px;
+  color: #8a90a0; margin-bottom: 8px;
 }
 .toggle-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .toggle-row .toggle-btn {
   flex: 1;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: #8a92a3;
+  background: #f4f5f7;
+  border: 1px solid #dadde2;
+  color: #5b6270;
   padding: 9px 4px;
   border-radius: 8px; cursor: pointer;
-  font-size: 11px; font-family: inherit; font-weight: 500;
+  font-size: 11px; font-weight: 500;
   transition: all 0.15s;
-  -webkit-tap-highlight-color: transparent;
 }
 .toggle-row .toggle-btn::before { content: '○ '; opacity: 0.55; }
-.toggle-row .toggle-btn:hover { background: rgba(255,255,255,0.1); color: #d4d4d4; }
+.toggle-row .toggle-btn:hover { background: #eceef1; color: #23272f; }
 .toggle-row .toggle-btn.active {
-  background: rgba(176, 74, 58, 0.92);
+  background: #b04a3a;
   border-color: #b04a3a; color: #fff;
 }
 .toggle-row .toggle-btn.active::before { content: '● '; opacity: 1; }
@@ -212,58 +216,55 @@ button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-c
 /* ===== View-mode switch (3Dモデル / 図面) ===== */
 .view-mode-switch {
   display: flex; gap: 4px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: #eceef1;
+  border: 1px solid #e3e6ea;
   border-radius: 9px; padding: 3px;
   margin-bottom: 14px;
 }
 .view-mode-switch .vm-btn {
   flex: 1; padding: 8px 4px;
   background: transparent; border: none;
-  color: #8a92a3; font-size: 11.5px; font-weight: 600;
+  color: #5b6270; font-size: 11.5px; font-weight: 600;
   border-radius: 6px; cursor: pointer;
-  font-family: inherit;
   transition: background 0.13s, color 0.13s;
 }
-.view-mode-switch .vm-btn:hover { color: #d4d4d4; }
-.view-mode-switch .vm-btn.active {
-  background: #b04a3a; color: #fff;
-}
+.view-mode-switch .vm-btn:hover { color: #23272f; }
+.view-mode-switch .vm-btn.active { background: #b04a3a; color: #fff; }
 
 /* ===== Drawing view (図面) ===== */
-#drawing-view {
-  position: fixed; top: 0; left: 0;
-  width: 100vw; height: 100vh;
+.drawing-view {
+  position: absolute; inset: 0;
   overflow-y: auto;
-  background: #0f1419;
+  background: #eceef1;
   padding: 26px 30px 70px;
 }
 .dwg-sheet {
-  background: #12161d;
-  border: 1px solid rgba(255,255,255,0.09);
+  background: #ffffff;
+  border: 1px solid #e3e6ea;
   border-radius: 10px;
   margin: 0 auto 22px;
   max-width: 940px;
   padding: 16px 20px 20px;
+  box-shadow: 0 2px 12px rgba(20, 28, 48, 0.07);
 }
 .dwg-sheet-title {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 12px; letter-spacing: 0.13em;
-  color: #e07a6a; font-weight: 600;
+  color: #b04a3a; font-weight: 600;
   margin-bottom: 3px;
 }
 .dwg-sheet-sub {
-  font-size: 10.5px; color: #6a7080; margin-bottom: 12px;
+  font-size: 10.5px; color: #8a90a0; margin-bottom: 12px;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   letter-spacing: 0.04em;
 }
 .dwg-sheet svg { display: block; width: 100%; height: auto; }
 .dwg-empty {
   max-width: 940px; margin: 0 auto;
-  text-align: center; color: #6a7080; font-size: 12.5px;
+  text-align: center; color: #8a90a0; font-size: 12.5px;
   line-height: 1.8;
   padding: 80px 20px;
-  border: 1px dashed rgba(255,255,255,0.1);
+  border: 1px dashed #cfd3da;
   border-radius: 10px;
 }
 .dwg-details-grid {
@@ -272,38 +273,36 @@ button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-c
   gap: 12px;
 }
 .dwg-detail-cell {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.07);
+  background: #f7f8fa;
+  border: 1px solid #e3e6ea;
   border-radius: 8px; padding: 9px 11px 6px;
 }
 .dwg-detail-cell .dc-title {
-  font-size: 10.5px; color: #b8bccc; font-weight: 600;
+  font-size: 10.5px; color: #23272f; font-weight: 600;
   margin-bottom: 4px;
 }
 .dwg-detail-cell .dc-step {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 8.5px; color: #6a7080; letter-spacing: 0.08em;
+  font-size: 8.5px; color: #8a90a0; letter-spacing: 0.08em;
 }
 
+/* ===== Mobile ===== */
 @media (max-width: 640px) {
-  #dashboard-toggle { display: block; }
-  #drawing-view { padding: 16px 12px 60px; }
+  .dashboard-toggle { display: block; }
+  .drawing-view { padding: 16px 12px 60px; }
   .dwg-sheet { padding: 12px 12px 16px; }
-  #step-panel {
+  .step-panel {
+    position: fixed;
     width: calc(100vw - 16px); left: 8px; top: 8px;
     height: auto; max-height: calc(100vh - 80px);
     overflow-y: auto; padding: 14px;
     z-index: 90;
     border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid #e3e6ea;
+    box-shadow: 0 6px 24px rgba(20, 28, 48, 0.18);
   }
-  #step-panel.collapsed {
-    display: none !important;
-  }
-  #legend-panel { display: none; }
-  #step-indicator-bar { left: 50%; transform: translateX(-50%); padding: 6px 8px; }
+  .step-panel.collapsed { display: none; }
+  .legend-panel { display: none; }
   .step-title { font-size: 16px; }
-  button { padding: 12px 6px; font-size: 13px; }
   .dot { width: 7px; height: 7px; }
 }

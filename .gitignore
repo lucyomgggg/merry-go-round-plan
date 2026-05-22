@@ -1,3 +1,8 @@
+node_modules
+dist
+*.local
+.DS_Store
+
 NOTE.md
 CLAUDE.md
 .claude/

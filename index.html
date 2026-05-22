@@ -1,69 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>メリーゴーランド V6 — 組立シミュレータ</title>
-<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id="scene"></canvas>
-<div id="drawing-view" style="display:none;"></div>
-<div id="loading">読み込み中...</div>
-
-<button id="dashboard-toggle" style="display:none;" aria-label="ダッシュボード開閉">☰</button>
-<div id="step-panel" class="panel" style="display:none;">
-  <div class="step-header-row">
-    <span class="step-counter">STEP <span class="num" id="step-num">0</span> <span style="opacity:0.4;">/ 10</span></span>
-    <span class="v6-badge">V6</span>
-  </div>
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-
-  <div class="view-mode-switch" id="view-mode-switch">
-    <button class="vm-btn active" id="vm-3d" data-mode="3d">3Dモデル</button>
-    <button class="vm-btn" id="vm-drawing" data-mode="drawing">図面</button>
-  </div>
-
-  <div id="step-list" class="step-list"></div>
-
-  <h2 class="step-title" id="step-title">開始前</h2>
-  <p class="step-desc" id="step-desc">上の一覧から段階を選んでください。</p>
-  <div class="step-detail" id="step-detail" style="display:none;">
-    <span class="label">POINT</span>
-    <span id="step-detail-text"></span>
-  </div>
-
-  <div class="parts-mini" id="parts-mini"></div>
-
-  <div class="toggle-section">
-    <div class="toggle-label">表示オプション</div>
-    <div class="toggle-row">
-      <button class="toggle-btn" id="toggle-dim">寸法</button>
-      <button class="toggle-btn" id="toggle-rot">回転</button>
-      <button class="toggle-btn" id="toggle-deco">装飾品</button>
-      <button class="toggle-btn" id="toggle-wood">木材</button>
-    </div>
-  </div>
-</div>
-
-<div id="legend-panel" class="panel" style="display:none;">
-  ドラッグ: 視点回転 | スクロール/ピンチ: ズーム
-</div>
-
-<div id="step-indicator-bar" style="display:none;">
-  <div class="dot" data-step="1"></div>
-  <div class="dot" data-step="2"></div>
-  <div class="dot" data-step="3"></div>
-  <div class="dot" data-step="4"></div>
-  <div class="dot" data-step="5"></div>
-  <div class="dot" data-step="6"></div>
-  <div class="dot" data-step="7"></div>
-  <div class="dot" data-step="8"></div>
-  <div class="dot" data-step="9"></div>
-  <div class="dot" data-step="10"></div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="main.js"></script>
+<div id="root"></div>
+<script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

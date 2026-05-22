@@ -1,0 +1,20 @@
+/* drawing.css — 2D図面の SVG 内部スタイル（ライトテーマ）。
+   DIM_FS=82, LBL_FS=74。dw-note は Math.round(74*0.8)=59px。 */
+
+.dw-pipe   { stroke: #5b6573; stroke-width: 6; fill: rgba(91,101,115,0.12); stroke-linejoin: round; }
+.dw-steel  { stroke: #6a7180; stroke-width: 6; fill: rgba(106,113,128,0.15); stroke-linejoin: round; }
+.dw-wood   { stroke: #b07a3c; stroke-width: 6; fill: rgba(176,122,60,0.14); stroke-linejoin: round; }
+.dw-deco   { stroke: #767c8a; stroke-width: 5; fill: rgba(118,124,138,0.13); stroke-linejoin: round; }
+.dw-dim    { stroke: #3f72b0; stroke-width: 4; fill: none; }
+.dw-dimar  { fill: #3f72b0; }
+.dw-ext    { stroke: #3f72b0; stroke-width: 3; fill: none; opacity: 0.5; }
+.dw-dtxt   { fill: #2c4a72; font-size: 82px; font-family: ui-monospace, monospace; font-weight: 600; }
+.dw-dbg    { fill: #ffffff; }
+.dw-lbl    { fill: #4f5663; font-size: 74px; font-family: -apple-system, sans-serif; }
+.dw-llead  { stroke: #8a90a0; stroke-width: 3; fill: none; }
+.dw-ldot   { fill: #8a90a0; }
+.dw-ax     { stroke: #b0b6c0; stroke-width: 3; fill: none; stroke-dasharray: 46 20 10 20; }
+.dw-ground { stroke: #6a7180; stroke-width: 6; }
+.dw-gh     { stroke: #b8bdc6; stroke-width: 3; }
+.dw-hidden { stroke: #9aa0ac; stroke-width: 4; fill: none; stroke-dasharray: 28 18; }
+.dw-note   { fill: #8a90a0; font-size: 59px; font-family: ui-monospace, monospace; }
